@@ -53,9 +53,9 @@ renderGameScreen (GameState snake _ food _ score _) = pictures $ snakePic ++ [fo
 
 -- Render game over screen
 renderGameOverScreen :: GameState -> Picture
-renderGameOverScreen gameState = translate (-110) 50 (scale 0.3 0.3 (color white (text "Game Over"))) <>
-                                 translate (-100) (-50) (scale 0.2 0.2 (color white (text $ "Final Score: " ++ show (score gameState)))) <>
-                                 translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press SPACE to Restart")))
+renderGameOverScreen gameState = translate (-110) 50 (scale 0.3 0.3 (color black (text "Game Over"))) <>
+                                 translate (-100) (-50) (scale 0.2 0.2 (color black (text $ "Final Score: " ++ show (score gameState)))) <>
+                                 translate (-150) (-150) (scale 0.2 0.2 (color black (text "Press SPACE to Restart")))
 
 -- Initial game state
 initialState :: IO GameState
@@ -140,7 +140,7 @@ main = do
   state <- initialState
   playIO
     (InWindow "Snake Game" (windowWidth, windowHeight) (100, 100)) -- Window configuration
-    aquamarine       -- Background color
+    azure       -- Background color
     5           -- Frames per second
     state       -- Initial state
     (return . render) -- Render the game
