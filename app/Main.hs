@@ -140,7 +140,7 @@ main = do
   state <- initialState
   playIO
     (InWindow "Snake Game" (windowWidth, windowHeight) (100, 100)) -- Window configuration
-    black       -- Background color
+    aquamarine       -- Background color
     5           -- Frames per second
     state       -- Initial state
     (return . render) -- Render the game
