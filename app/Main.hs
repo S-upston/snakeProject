@@ -19,11 +19,11 @@ data GameState = GameState
   }
 data Screen = Start | Game | GameOver deriving (Eq)
 
--- Convert game coordinates to Gloss coordinates
+
 toGlossCoord :: Position -> (Float, Float)
 toGlossCoord (x, y) = (fromIntegral x * fromIntegral blockSize, fromIntegral y * fromIntegral blockSize)
 
--- Render the game state
+
 render :: GameState -> Picture
 render gameState = case screen gameState of
   Start    -> renderStartScreen
@@ -40,8 +40,8 @@ renderGameScreen :: GameState -> Picture
 renderGameScreen (GameState snake _ food _ score _) = pictures ( snakePic ++ [foodPic, border, scoreDisplay])
   where
     snakePic = map (color green . translateBlock) snake
-    foodPic  = color red $ translateBlock food
-    border   = color white $ rectangleWire (fromIntegral windowWidth) (fromIntegral windowHeight)
+    foodPic  = color red (translateBlock food)
+    border   = color white (rectangleWire (fromIntegral windowWidth) (fromIntegral windowHeight))
     scoreDisplay = translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
                      (scale 0.1 0.1 (color white (text ("Score: " ++ show score))))
     translateBlock pos = translate x y ( rectangleSolid size size)
@@ -99,14 +99,14 @@ updateGame gameState
             return gameState { snake = newSnake, food = newFood, score = score gameState + 1 }
           else return gameState { snake = newSnake }
 
--- Move the snake
+
 move :: Direction -> Position -> Position
 move U (x, y) = (x, y + 1)
 move D (x, y) = (x, y - 1)
 move L (x, y) = (x - 1, y)
 move R (x, y) = (x + 1, y)
 
--- Check for collisions
+
 collision :: Position -> [Position] -> Bool
 collision pos body = pos `elem` tail body || outOfBounds pos
   where
@@ -114,7 +114,7 @@ collision pos body = pos `elem` tail body || outOfBounds pos
     w = windowWidth `div` (2 * blockSize)
     h = windowHeight `div` (2 * blockSize)
 
--- Handle key events
+
 handleKeys :: Event -> GameState -> IO GameState
 handleKeys (EventKey (SpecialKey KeyUp) Down _ _) gameState =
   return (if dir gameState /= D then gameState { dir = U } else gameState)
