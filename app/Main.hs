@@ -33,9 +33,9 @@ render gameState = case screen gameState of
 
 -- Render start screen
 renderStartScreen :: Picture
-renderStartScreen = translate (-100) 50 (scale 0.2 0.2 (color white (text "Press SPACE to Start"))) <>
-                    translate (-130) (-50) (scale 0.2 0.2 (color white (text "Use arrow keys to"))) <>
-		    translate (-100) (-100) (scale 0.2 0.2 (color white(text"move the snake")))
+renderStartScreen = translate (-130) 50 (scale 0.2 0.2 (color white (text "Press SPACE to Start"))) <>
+                    translate (-120) (-50) (scale 0.2 0.2 (color white (text "Use arrow keys to"))) <>
+                    translate (-100) (-100) (scale 0.2 0.2 (color white(text"move the snake")))
 
 -- Render game screen
 renderGameScreen :: GameState -> Picture
