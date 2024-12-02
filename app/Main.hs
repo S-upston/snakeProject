@@ -54,7 +54,7 @@ renderGameScreen (GameState snake _ food _ score _) = pictures $ snakePic ++ [fo
 -- Render game over screen
 renderGameOverScreen :: GameState -> Picture
 renderGameOverScreen gameState = translate (-110) 50 (scale 0.3 0.3 (color white (text "Game Over"))) <>
-                                 translate (-110) (-50) (scale 0.2 0.2 (color white (text $ "Final Score: " ++ show (score gameState)))) <>
+                                 translate (-100) (-50) (scale 0.2 0.2 (color white (text $ "Final Score: " ++ show (score gameState)))) <>
                                  translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press SPACE to Restart")))
 
 -- Initial game state
