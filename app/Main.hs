@@ -52,7 +52,7 @@ renderStartScreen = pictures
   ]
 
 renderGameScreen :: GameState -> Picture
-renderGameScreen (GameState snake _ food _ score hiScore walls _ _ duoSnake) = pictures $
+renderGameScreen (GameState snake _ food _ score hiScore walls _ _ duoSnake _ _) = pictures $
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
   [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] ++
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
@@ -62,6 +62,7 @@ renderGameScreen (GameState snake _ food _ score hiScore walls _ _ duoSnake) = p
   where
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
     size = fromIntegral blockSize
+
 
 renderGameOverScreen :: GameState -> Picture
 renderGameOverScreen gameState = pictures
