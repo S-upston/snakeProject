@@ -61,7 +61,8 @@ renderGameScreen (GameState snake _ food _ score hiScore walls _ _ duoSnake _ _)
       (scale 0.1 0.1 (color white (text $ "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore))) ]
   where
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
-    size 
+    size = fromIntegral blockSize
+
 
 
 
