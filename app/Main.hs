@@ -167,11 +167,12 @@ move L (x, y) = (x - 1, y)
 move R (x, y) = (x + 1, y)
 
 collision :: Position -> [Position] -> Bool
-collision pos body = trace (show pos ++ " " ++ show body ++ " " ++ show (pos `elem` body || outOfBounds pos)) (pos `elem` tail body || outOfBounds pos)
+collision pos body = pos `elem` tail body || outOfBounds pos
   where
     outOfBounds (x, y) = abs x > w || abs y > h
     w = windowWidth `div` (2 * blockSize)
     h = windowHeight `div` (2 * blockSize)
+
     
 
 -- Event Handling
