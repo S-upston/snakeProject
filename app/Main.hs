@@ -120,17 +120,23 @@ updateGame gameState
   | otherwise = do
       let newHead = move (dir gameState) (head (snake gameState))
           newDuoHead = move (oppositeDirection (dir gameState)) (head (duoSnake gameState))  -- Duo snake moves in the opposite direction
+          -- Update snake with check for Tail Mode
           newSnake = if tailMode gameState && newHead == food gameState
-                     then tail (snake gameState) ++ [newHead]
+                     then if length (snake gameState) > 1  -- Check if snake has more than one segment
+                          then tail (snake gameState) ++ [newHead]
+                          else newHead : snake gameState  -- If only one segment, just add the new head
                      else if newHead == food gameState
                      then newHead : snake gameState
                      else newHead : init (snake gameState)
+          -- Update duoSnake with check for Tail Mode
           newDuoSnake = if duoMode gameState
                          then if tailMode gameState && newDuoHead == food gameState
-                              then tail (duoSnake gameState) ++ [newDuoHead]
+                              then if length (duoSnake gameState) > 1
+                                   then tail (duoSnake gameState) ++ [newDuoHead]
+                                   else newDuoHead : duoSnake gameState
                               else if newDuoHead == food gameState
-                              then newDuoHead : duoSnake gameState
-                              else newDuoHead : init (duoSnake gameState)
+                                   then newDuoHead : duoSnake gameState
+                                   else newDuoHead : init (duoSnake gameState)
                          else []  -- If Duo Mode is disabled, duoSnake should be empty
       -- Separate collision checks for the main snake and the duo snake
       let snakeCollides = collision newHead newSnake || collision newHead (walls gameState)
@@ -146,6 +152,7 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 
 
