@@ -158,7 +158,7 @@ tailDirection snake
                 
 
 getTailComponent :: [Position] -> Position
-getTailComponent [s1, s2] = zipWith (-) s1 s2
+getTailComponent [(x1,y1),(x2,y2)] = (x1-x2,y1-y2)
 
 
 
