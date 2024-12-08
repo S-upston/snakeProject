@@ -110,7 +110,7 @@ randomFoodPosition = do
 
     
 levelWalls :: Int -> [Position]
-levelWalls 1 = [(-5,-5),(-4,-5),(-5,-4)] -- Simple walls, cross shape
+levelWalls 1 = [(-5,-5),(-4,-5),(-5,-4),(5,5),(4,5),(5,4),(-5,5),(-4,5),(-5,4),(5,-5),(4,-5),(5,-4)] -- Simple walls, cross shape
 levelWalls 2 = [(x, y) | x <- [-5..5], y <- [-5..5], x == 0 || y == 0 || (x == y)] -- Diagonal walls
 levelWalls 3 = [(x, y) | x <- [-5..5], y <- [-5..5], x == 0 || y == 0 || (x == y) || (x == -y)] -- Complex walls
 
