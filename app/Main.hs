@@ -82,27 +82,20 @@ renderLeaderboardScreen scores = pictures $
 initialState :: IO GameState
 initialState = do
   foodPos <- randomFoodPosition
-  let mainSnake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Starting positions for main snake
-      duoSnakeStart = []  -- Initially, no duo snake
-      walls = []  -- Can replace with a default pattern of walls if needed
-      leaderboard = []  -- Empty leaderboard for now
-  putStrLn ("Main Snake Initial Position: " ++ show mainSnake)
-  return (GameState
-    { snake = mainSnake
+  return GameState
+    { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
     , dir = R
     , food = foodPos
     , alive = True
     , score = 0
-    , screen = Start
-    , duoSnake = duoSnakeStart
-    , tailMode = False
-    , duoMode = True
     , hiScore = 0
-    , walls = walls
-    , leaderboard = leaderboard
-    })
-
-
+    , screen = Start
+    , walls = []
+    , tailMode = False
+    , duoMode = False
+    , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
+    , leaderboard = []
+    }
     
 randomFoodPosition :: IO Position
 randomFoodPosition = do
@@ -127,42 +120,30 @@ updateGame gameState
   | otherwise = do
       let newHead = move (dir gameState) (head (snake gameState))
           newDuoHead = move (oppositeDirection (dir gameState)) (head (duoSnake gameState))  -- Duo snake moves in the opposite direction
-          
-      -- Debugging print for new head and duo snake head
-      putStrLn ("New Main Snake Head: " ++ show newHead)
-      putStrLn ("New Duo Snake Head: " ++ show newDuoHead)
 
-      -- Update snake with check for Tail Mode
-      let newSnake = if tailMode gameState && newHead == food gameState
-                         then if length (snake gameState) == 1
-                              then [newHead]
-                              else tail (snake gameState) ++ [newHead]
-                         else if newHead == food gameState
-                              then newHead : snake gameState
-                              else newHead : init (snake gameState)
+          -- Update snake with check for Tail Mode
+          newSnake = if tailMode gameState && newHead == food gameState
+                     then if length (snake gameState) == 1  -- If snake has only one segment
+                          then [newHead]  -- Don't call `tail` on a single segment
+                          else tail (snake gameState) ++ [newHead]  -- Call `tail` only if there are more than 1 segment
+                     else if newHead == food gameState
+                     then newHead : snake gameState
+                     else newHead : init (snake gameState)
 
           -- Update duoSnake with check for Tail Mode
           newDuoSnake = if duoMode gameState
                          then if tailMode gameState && newDuoHead == food gameState
                               then if length (duoSnake gameState) == 1
-                                   then [newDuoHead]
+                                   then [newDuoHead]  -- Don't call `tail` on a single segment
                                    else tail (duoSnake gameState) ++ [newDuoHead]
                               else if newDuoHead == food gameState
                                    then newDuoHead : duoSnake gameState
                                    else newDuoHead : init (duoSnake gameState)
                          else []  -- If Duo Mode is disabled, duoSnake should be empty
 
-      -- Debugging print for the updated snake and duo snake
-      putStrLn ("Updated Main Snake: " ++ show newSnake)
-      putStrLn ("Updated Duo Snake: " ++ show newDuoSnake)
-
       -- Separate collision checks for the main snake and the duo snake
       let snakeCollides = collision newHead newSnake || collision newHead (walls gameState)
           duoSnakeCollides = if duoMode gameState then collision newDuoHead newDuoSnake || collision newDuoHead (walls gameState) else False
-
-      -- Debugging print for collision detection
-      putStrLn ("Main Snake Collision: " ++ show snakeCollides)
-      putStrLn ("Duo Snake Collision: " ++ show duoSnakeCollides)
 
       -- If either snake collides, the game is over
       if snakeCollides || duoSnakeCollides
@@ -176,6 +157,7 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 
 
