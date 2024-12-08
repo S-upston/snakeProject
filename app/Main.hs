@@ -154,7 +154,7 @@ tailDirection snake
   | (1,0) == newDir = L
   | (-1,0) == newDir = R
   where
-    newDir = getTailComponent (drop ((length snake) - 2) snake
+    newDir = getTailComponent (drop ((length snake) - 2) snake)
                 
 
 getTailComponent :: [Position] -> Position
