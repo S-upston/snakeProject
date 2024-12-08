@@ -118,10 +118,10 @@ updateGame :: GameState -> IO GameState
 updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver }
   | otherwise = do
-      let newHead 
-            | tailMode gameState = last (snake gameState)
+      let tailHead = move (dir gameState) (head (snake gameState))
+          newHead 
+            | tailMode gameState && tailHead == food gameState = last (snake gameState)
             | otherwise = move (dir gameState) (head (snake gameState))
-          tailHead = move (dir gameState) (head (snake gameState))
           newSnake
             | tailMode gameState && tailHead == food gameState = 
                 -- Tail Mode logic: reverse direction and mirror
