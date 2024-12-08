@@ -116,17 +116,19 @@ update _ gameState = case screen gameState of
 
 updateGame :: GameState -> IO GameState
 updateGame gameState
-  | not (alive gameState) = return gameState { screen = GameOver, leaderboard = updateLeaderboard (score gameState) (leaderboard gameState) }
+  | not (alive gameState) = return gameState { screen = GameOver }
   | otherwise = do
       let newHead = move (dir gameState) (head (snake gameState))
           newSnake
-            | tailMode gameState && newHead == food gameState = -- Tail mode logic
-                -- When in Tail Mode and the snake eats food, the tail becomes the new head
-                (tail (snake gameState)) ++ [newHead]
+            | tailMode gameState && newHead == food gameState = 
+                -- Tail Mode logic: reverse direction and mirror
+                let mirroredSnake = mirrorSnake (snake gameState) (dir gameState)
+                in newHead : mirroredSnake
             | newHead == food gameState = -- Regular snake eating food
                 newHead : snake gameState
             | otherwise = -- Regular snake movement
                 newHead : init (snake gameState)
+      
       if collision newHead (newSnake ++ walls gameState)
         then return gameState { alive = False, screen = GameOver }
         else do
@@ -137,6 +139,17 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
+-- Function to mirror the snake's body based on its direction
+mirrorSnake :: [Position] -> Direction -> [Position]
+mirrorSnake body dir
+  | dir == L || dir == R = reverseBodyVertical body
+  | dir == U || dir == D = reverseBodyHorizontal body
+  where
+    -- Mirror the snake's body vertically (reverse the x-coordinates)
+    reverseBodyVertical = map (\(x, y) -> (-x, y))
+    -- Mirror the snake's body horizontally (reverse the y-coordinates)
+    reverseBodyHorizontal = map (\(x, y) -> (x, -y))
 
 
 
