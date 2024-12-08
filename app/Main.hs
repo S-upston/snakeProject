@@ -93,7 +93,7 @@ initialState = do
     , walls = []
     , tailMode = False
     , duoMode = False
-    , duoSnake = [(0, 2), (-1, 2), (-2, 2), (-3, 2)]
+    , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
     , leaderboard = []
     }
     
