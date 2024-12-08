@@ -93,7 +93,7 @@ initialState = do
     , walls = []
     , tailMode = False
     , duoMode = False
-    , duoSnake = []
+    , duoSnake = [(0, 2), (-1, 2), (-2, 2), (-3, 2)]
     , leaderboard = []
     }
     
@@ -119,21 +119,29 @@ updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver, leaderboard = updateLeaderboard (score gameState) (leaderboard gameState) }
   | otherwise = do
       let newHead = move (dir gameState) (head (snake gameState))
+          newDuoHead = move (dir gameState) (head (duoSnake gameState))  -- Duo snake movement
           newSnake = if tailMode gameState && newHead == food gameState
                       then tail (snake gameState) ++ [newHead]
                       else if newHead == food gameState
                       then newHead : snake gameState
                       else newHead : init (snake gameState)
-      if collision newHead (newSnake ++ walls gameState)
+          newDuoSnake = if tailMode gameState && newDuoHead == food gameState
+                         then tail (duoSnake gameState) ++ [newDuoHead]
+                         else if newDuoHead == food gameState
+                         then newDuoHead : duoSnake gameState
+                         else newDuoHead : init (duoSnake gameState)
+      if collision newHead (newSnake ++ walls gameState) || collision newDuoHead (newDuoSnake ++ walls gameState)
         then return gameState { alive = False, screen = GameOver }
         else do
           newFood <- if newHead == food gameState then randomFoodPosition else return (food gameState)
           return gameState
             { snake = newSnake
+            , duoSnake = newDuoSnake  -- Update duoSnake
             , food = newFood
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 updateLeaderboard :: Int -> [Int] -> [Int]
 updateLeaderboard score lb = take 10 (insert score lb)
