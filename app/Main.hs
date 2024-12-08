@@ -83,7 +83,7 @@ initialState :: IO GameState
 initialState = do
   foodPos <- randomFoodPosition
   return GameState
-    { snake = [(2, 0), (1, 0), (0, 0), (-1, 0)]  -- Adjusted initial position
+    { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
     , dir = R
     , food = foodPos
     , alive = True
