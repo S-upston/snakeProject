@@ -130,8 +130,6 @@ updateGame gameState
                 newHead : snake gameState
             | otherwise = -- Regular snake movement
                 newHead : init (snake gameState)
-      if tailMode gameState
-        then newHead = head newSnake
       -- Check for collision after adding the new head
       if collision newHead newSnake
         then return gameState { alive = False, screen = GameOver }
