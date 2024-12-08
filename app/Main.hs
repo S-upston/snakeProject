@@ -54,7 +54,7 @@ renderStartScreen = pictures
 renderGameScreen :: GameState -> Picture
 renderGameScreen (GameState snake _ food _ score hiScore _ walls _ _ duoSnake _) = pictures $
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
-  [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] ++
+  (if duoMode then [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] else []) ++
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
   [ translateBlock food (color red (rectangleSolid size size)) ] ++
   [ translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
@@ -119,17 +119,19 @@ updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver, leaderboard = updateLeaderboard (score gameState) (leaderboard gameState) }
   | otherwise = do
       let newHead = move (dir gameState) (head (snake gameState))
-          newDuoHead = move (dir gameState) (head (duoSnake gameState))  -- Duo snake movement
+          newDuoHead = move (oppositeDirection (dir gameState)) (head (duoSnake gameState))  -- Duo snake moves in the opposite direction
           newSnake = if tailMode gameState && newHead == food gameState
-                      then tail (snake gameState) ++ [newHead]
-                      else if newHead == food gameState
-                      then newHead : snake gameState
-                      else newHead : init (snake gameState)
-          newDuoSnake = if tailMode gameState && newDuoHead == food gameState
-                         then tail (duoSnake gameState) ++ [newDuoHead]
-                         else if newDuoHead == food gameState
-                         then newDuoHead : duoSnake gameState
-                         else newDuoHead : init (duoSnake gameState)
+                     then tail (snake gameState) ++ [newHead]
+                     else if newHead == food gameState
+                     then newHead : snake gameState
+                     else newHead : init (snake gameState)
+          newDuoSnake = if duoMode gameState
+                         then if tailMode gameState && newDuoHead == food gameState
+                              then tail (duoSnake gameState) ++ [newDuoHead]
+                              else if newDuoHead == food gameState
+                              then newDuoHead : duoSnake gameState
+                              else newDuoHead : init (duoSnake gameState)
+                         else []  -- If Duo Mode is disabled, duoSnake should be empty
       if collision newHead (newSnake ++ walls gameState) || collision newDuoHead (newDuoSnake ++ walls gameState)
         then return gameState { alive = False, screen = GameOver }
         else do
@@ -141,6 +143,7 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 
 updateLeaderboard :: Int -> [Int] -> [Int]
@@ -184,6 +187,12 @@ handleKeys (EventKey (Char 't') Down _ _) gameState
 handleKeys (EventKey (Char 'd') Down _ _) gameState
   | screen gameState == Start = return gameState { duoMode = not (duoMode gameState) }
 handleKeys _ gameState = return gameState
+
+oppositeDirection :: Direction -> Direction
+oppositeDirection U = D
+oppositeDirection D = U
+oppositeDirection L = R
+oppositeDirection R = L
 
 -- Main function
 main :: IO ()
