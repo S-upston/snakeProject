@@ -118,10 +118,10 @@ updateGame :: GameState -> IO GameState
 updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver }
   | otherwise = do
-      let newDir
-            | tailMode gameState = tailDirection (snake gameState)
+      let tailHead = move (dir gameState) (head (snake gameState))
+          newDir
+            | tailMode gameState && tailHead == food gameState = tailDirection (snake gameState)
             | otherwise = dir gameState
-          tailHead = move (dir gameState) (head (snake gameState))
           newHead 
             | tailMode gameState && tailHead == food gameState = last (snake gameState)
             | otherwise = move (dir gameState) (head (snake gameState))
