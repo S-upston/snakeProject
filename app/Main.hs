@@ -2,7 +2,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random (randomRIO)
 import Data.List (insert)
-
+import Debug.Trace (trace)
 -- Constants
 windowWidth, windowHeight, blockSize :: Int
 windowWidth = 420
