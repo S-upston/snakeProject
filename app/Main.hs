@@ -129,13 +129,13 @@ updateGame gameState
       putStrLn ("New Duo Snake Head: " ++ show newDuoHead)
 
       -- Update snake with check for Tail Mode
-      newSnake = if tailMode gameState && newHead == food gameState
-                     then if length (snake gameState) == 1
-                          then [newHead]
-                          else tail (snake gameState) ++ [newHead]
-                     else if newHead == food gameState
-                     then newHead : snake gameState
-                     else newHead : init (snake gameState)
+      let newSnake = if tailMode gameState && newHead == food gameState
+                         then if length (snake gameState) == 1
+                              then [newHead]
+                              else tail (snake gameState) ++ [newHead]
+                         else if newHead == food gameState
+                              then newHead : snake gameState
+                              else newHead : init (snake gameState)
 
           -- Update duoSnake with check for Tail Mode
           newDuoSnake = if duoMode gameState
@@ -172,6 +172,7 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 
 
