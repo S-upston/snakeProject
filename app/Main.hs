@@ -118,7 +118,10 @@ updateGame :: GameState -> IO GameState
 updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver }
   | otherwise = do
-      let tailHead = move (dir gameState) (head (snake gameState))
+      let newDir
+            | tailMode gameState = tailDirection (snake gameState)
+            | otherwise = dir gameState
+          tailHead = move (dir gameState) (head (snake gameState))
           newHead 
             | tailMode gameState && tailHead == food gameState = last (snake gameState)
             | otherwise = move (dir gameState) (head (snake gameState))
@@ -141,21 +144,21 @@ updateGame gameState
             , food = newFood
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
+            , dir = newDir
             }
 
--- Function to mirror the snake's body based on its direction
-mirrorSnake :: [Position] -> Direction -> [Position]
-mirrorSnake body dir
-  | dir == L || dir == R = reverseBodyVertical body
-  | dir == U || dir == D = reverseBodyHorizontal body
+tailDirection :: [Position] -> Direction
+tailDirection snake 
+  | (0,1) == newDir = D
+  | (0,-1) == newDir = U
+  | (1,0) == newDir = L
+  | (-1,0) == newDir = R
   where
-    -- Mirror the snake's body vertically (reverse the x-coordinates)
-    reverseBodyVertical = map (\(x, y) -> (-x, y))
-    -- Mirror the snake's body horizontally (reverse the y-coordinates)
-    reverseBodyHorizontal = map (\(x, y) -> (x, -y))
+    newDir = getTailComponent (drop ((length snake) - 2) snake
+                
 
-
-
+getTailComponent :: [Position] -> Position
+getTailComponent [s1, s2] = zipWith (-) s1 s2
 
 
 
