@@ -128,7 +128,7 @@ updateGame gameState
           newSnake
             | tailMode gameState && tailHead == food gameState = 
                 -- Tail Mode logic: reverse direction and mirror
-                newHead : reverse(init(snake gameState))
+                newHead : reverse(tailHead:(init(snake gameState)))
             | newHead == food gameState = -- Regular snake eating food
                 newHead : snake gameState
             | otherwise = -- Regular snake movement
