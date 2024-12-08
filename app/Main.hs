@@ -102,13 +102,15 @@ drawStartScreen _ = Pictures
   ]
 
 drawGame :: GameState -> Picture
-drawGame state = Pictures
-  [ drawSnake (snake state)
-  , maybe Blank drawSnake (secondSnake state)
-  , drawItems (items state)
-  , drawWalls (walls state)
-  , drawScore state
-  ]
+drawGame state =
+  Pictures
+    [ drawSnake (snake state)
+    , maybe Blank drawSnake (secondSnake state)
+    , drawItems (items state)
+    , drawWalls (walls state)
+    , drawScore state -- Pass GameState
+    ]
+
 
 drawGameOver :: GameState -> Picture
 drawGameOver state = Pictures
@@ -131,10 +133,16 @@ drawItems i = Pictures $ map drawCell i
 drawWalls w = Pictures $ map drawCell w
 
 drawCell :: (Int, Int) -> Picture
-drawCell (x, y) = Translate (fromIntegral x * cellSize) (fromIntegral y * cellSize) $
-                  Color green $ rectangleSolid (fromIntegral cellSize) (fromIntegral cellSize)
+drawCell (x, y) =
+  Translate (fromIntegral x * fromIntegral cellSize) (fromIntegral y * fromIntegral cellSize) $
+  Color white $
+  rectangleSolid (fromIntegral cellSize) (fromIntegral cellSize)
 
-drawScore state = Translate (-300) 300 $ Scale 0.2 0.2 $ Text $ "Score: " ++ show (score state)
+
+drawScore :: GameState -> Picture
+drawScore state =
+  Translate (-300) 300 $ Scale 0.2 0.2 $ Text $ "Score: " ++ show (score state)
+
 
 -- Input Handling
 handleInput :: Event -> GameState -> GameState
