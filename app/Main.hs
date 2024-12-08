@@ -82,10 +82,11 @@ renderLeaderboardScreen scores = pictures $
 initialState :: IO GameState
 initialState = do
   foodPos <- randomFoodPosition
-  let mainSnake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]
-  let duoSnakeStart = [(5, 5), (4, 5), (3, 5), (2, 5)]  -- Position away from the main snake
+  let mainSnake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Starting positions for main snake
+      duoSnakeStart = []  -- Initially, no duo snake
+      walls = []  -- Can replace with a default pattern of walls if needed
+      leaderboard = []  -- Empty leaderboard for now
   putStrLn ("Main Snake Initial Position: " ++ show mainSnake)
-  putStrLn ("Duo Snake Initial Position: " ++ show duoSnakeStart)
   return (GameState
     { snake = mainSnake
     , dir = R
@@ -93,11 +94,14 @@ initialState = do
     , alive = True
     , score = 0
     , screen = Start
-    , duoSnake = duoSnakeStart  -- Initialize duoSnake
+    , duoSnake = duoSnakeStart
     , tailMode = False
-    , duoMode = True  -- Set this to True for debugging
+    , duoMode = True
     , hiScore = 0
+    , walls = walls
+    , leaderboard = leaderboard
     })
+
 
     
 randomFoodPosition :: IO Position
