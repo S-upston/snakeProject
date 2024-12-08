@@ -129,7 +129,8 @@ updateGame gameState
             | otherwise = -- Regular snake movement
                 newHead : init (snake gameState)
       
-      if collision newHead (newSnake ++ walls gameState)
+      -- Check for collision after adding the new head
+      if collision newHead newSnake
         then return gameState { alive = False, screen = GameOver }
         else do
           newFood <- if newHead == food gameState then randomFoodPosition else return (food gameState)
