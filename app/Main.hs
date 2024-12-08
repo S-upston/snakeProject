@@ -26,6 +26,7 @@ data GameState = GameState
   , duoMode    :: Bool
   , duoSnake   :: [Position]
   , leaderboard :: [Int]
+  , level      :: Int  -- New field for level
   }
 
 data Screen = Start | Game | GameOver | Leaderboard deriving (Eq)
@@ -95,6 +96,7 @@ initialState = do
     , duoMode = False
     , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
     , leaderboard = []
+    , level = 1  -- Default level
     }
     
 randomFoodPosition :: IO Position
@@ -105,6 +107,12 @@ randomFoodPosition = do
   where
     w = windowWidth `div` (2 * blockSize) - 1
     h = windowHeight `div` (2 * blockSize) - 1
+
+    
+levelWalls :: Int -> [Position]
+levelWalls 1 = [(x, y) | x <- [-5..5], y <- [-5..5], x == 0 || y == 0] -- Simple walls, cross shape
+levelWalls 2 = [(x, y) | x <- [-5..5], y <- [-5..5], x == 0 || y == 0 || (x == y)] -- Diagonal walls
+levelWalls 3 = [(x, y) | x <- [-5..5], y <- [-5..5], x == 0 || y == 0 || (x == y) || (x == -y)] -- Complex walls
 
 -- Update logic
 update :: Float -> GameState -> IO GameState
@@ -200,8 +208,11 @@ handleKeys (EventKey (Char 'l') Down _ _) gameState
   | screen gameState == GameOver = return gameState { screen = Leaderboard }
   | screen gameState == Start = return gameState { walls = nextWalls (walls gameState) }
   where
-    nextWalls [] = [(x, 5) | x <- [-10..10]]
+    nextWalls [] = levelWalls (level gameState) -- Set walls according to the level
     nextWalls _  = []
+handleKeys (EventKey (Char '1') Down _ _) gameState = return gameState { level = 1, walls = levelWalls 1 }
+handleKeys (EventKey (Char '2') Down _ _) gameState = return gameState { level = 2, walls = levelWalls 2 }
+handleKeys (EventKey (Char '3') Down _ _) gameState = return gameState { level = 3, walls = levelWalls 3 }
 handleKeys (EventKey (Char 't') Down _ _) gameState
   | screen gameState == Start = return gameState { tailMode = not (tailMode gameState) }
 handleKeys (EventKey (Char 'd') Down _ _) gameState
