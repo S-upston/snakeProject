@@ -132,7 +132,10 @@ updateGame gameState
                               then newDuoHead : duoSnake gameState
                               else newDuoHead : init (duoSnake gameState)
                          else []  -- If Duo Mode is disabled, duoSnake should be empty
-      if collision newHead (newSnake ++ walls gameState) || collision newDuoHead (newDuoSnake ++ walls gameState)
+      -- Separate collision checks for the main snake and the duo snake
+      let snakeCollides = collision newHead newSnake || collision newHead (walls gameState)
+          duoSnakeCollides = if duoMode gameState then collision newDuoHead newDuoSnake || collision newDuoHead (walls gameState) else False
+      if snakeCollides || duoSnakeCollides
         then return gameState { alive = False, screen = GameOver }
         else do
           newFood <- if newHead == food gameState then randomFoodPosition else return (food gameState)
@@ -143,6 +146,7 @@ updateGame gameState
             , score = if newHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState + 1) (hiScore gameState)
             }
+
 
 
 
