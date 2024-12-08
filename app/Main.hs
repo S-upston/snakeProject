@@ -53,7 +53,7 @@ renderStartScreen = pictures
   ]
 
 renderGameScreen :: GameState -> Picture
-renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSnake _) = pictures $
+renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSnake _ _) = pictures $
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
   (if duoMode then [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] else []) ++
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
