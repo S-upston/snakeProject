@@ -3,6 +3,8 @@ module Main where
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random (randomRIO)
+import Data.Maybe (fromJust, maybeToList)
+import System.Random (randomRs, mkStdGen)
 
 -- Data Types
 data GameState = GameState
@@ -225,13 +227,15 @@ checkCollision _ _ = False
 growSnake :: [(Int, Int)] -> [(Int, Int)]
 growSnake snake = snake ++ [last snake]
 
+tailToHead :: [(Int, Int)] -> [(Int, Int)]
+tailToHead snake = last snake : init snake
+
 spawnNewItem :: [(Int, Int)] -> [(Int, Int)]
-spawnNewItem occupied = do
+spawnNewItem occupied = 
   let available = [(x, y) | x <- [1..gridSize - 1], y <- [1..gridSize - 1], (x, y) `notElem` occupied]
-  if null available
-    then []
-    else [available !! randomIndex]
-  where
-    randomIndex = unsafePerformIO (randomRIO (0, length available - 1))
+  in if null available
+     then []
+     else [available !! head (randomRs (0, length available - 1) (mkStdGen 42))]
+
 
 
