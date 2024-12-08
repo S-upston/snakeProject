@@ -241,9 +241,11 @@ tailToHead snake = last snake : init snake
 spawnNewItem :: [(Int, Int)] -> [(Int, Int)]
 spawnNewItem occupied =
   let available = [(x, y) | x <- [1..gridSize - 1], y <- [1..gridSize - 1], (x, y) `notElem` occupied]
-  in if null available
-     then [] -- No available spots, return empty list
+  in trace ("Available spaces: " ++ show available) $
+     if null available
+     then []
      else [available !! (randomRs (0, length available - 1) (mkStdGen 42) !! 0)]
+
 
 
 
