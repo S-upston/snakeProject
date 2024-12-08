@@ -127,7 +127,7 @@ drawLeaderboard state = Pictures
   , Translate (-200) (-50) $ Scale 0.2 0.2 $ Text "Press Enter to Return"
   ]
 
-drawSnake, drawItems, drawWalls, drawScore :: [(Int, Int)] -> Picture
+drawSnake, drawItems, drawWalls :: [(Int, Int)] -> Picture
 drawSnake s = Pictures $ map drawCell s
 drawItems i = Pictures $ map drawCell i
 drawWalls w = Pictures $ map drawCell w
