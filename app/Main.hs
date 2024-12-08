@@ -162,6 +162,7 @@ updateGame gameState
 
 
 
+
 updateLeaderboard :: Int -> [Int] -> [Int]
 updateLeaderboard score lb = take 10 (insert score lb)
 
@@ -172,11 +173,15 @@ move L (x, y) = (x - 1, y)
 move R (x, y) = (x + 1, y)
 
 collision :: Position -> [Position] -> Bool
-collision pos body = pos `elem` tail body || outOfBounds pos
+collision pos body
+  | null body = False  -- If body is empty, no collision
+  | length body == 1 = pos == head body  -- If only one segment, check against the head only
+  | otherwise = pos `elem` tail body || outOfBounds pos
   where
     outOfBounds (x, y) = abs x > w || abs y > h
     w = windowWidth `div` (2 * blockSize)
     h = windowHeight `div` (2 * blockSize)
+
 
     
 
