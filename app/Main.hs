@@ -125,12 +125,13 @@ updateGame gameState
           newSnake
             | tailMode gameState && tailHead == food gameState = 
                 -- Tail Mode logic: reverse direction and mirror
-                reverse(newHead : snake gameState)
+                newHead : reverse(init(snake gameState))
             | newHead == food gameState = -- Regular snake eating food
                 newHead : snake gameState
             | otherwise = -- Regular snake movement
                 newHead : init (snake gameState)
       -- Check for collision after adding the new head
+      
       if collision newHead newSnake
         then return gameState { alive = False, screen = GameOver }
         else do
