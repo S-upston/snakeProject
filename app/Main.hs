@@ -45,7 +45,7 @@ renderStartScreen gameState = pictures
   [ translate (-130) 100 (scale 0.2 0.2 (color white (text "Press ENTER to Start")))
   , translate (-170) 50 (scale 0.2 0.2 (color white (text "Use ARROW KEYS to move")))
   , translate (-175) (-50) (scale 0.2 0.2 (color white (text "Press T to toggle Tail Mode")))
-  , translate (-190) (-100) (scale 0.2 0.2 (color white (text "Press 0,1,2,3,4,5 to select level")))
+  , translate (-195) (-100) (scale 0.2 0.2 (color white (text "Press 0,1,2,3,4,5 to select level")))
   , translate (-180) (-150) (scale 0.2 0.2 (color white (text ("Level: " ++ show (level gameState) ++ " Tail Mode: " ++ show(tailMode gameState)))))
   ]
 
@@ -174,7 +174,7 @@ updateGame gameState
           return gameState
             { snake = newSnake
             , food = newFood
-            , score = if newHead == food gameState then score gameState + 1 else score gameState
+            , score = if tailHead == food gameState then score gameState + 1 else score gameState
             , hiScore = max (score gameState) (hiScore gameState)
             , dir = newDir
             }
@@ -246,7 +246,7 @@ handleKeys (EventKey (Char 'l') Down _ _) gameState
   | screen gameState == GameOver = return gameState { screen = Leaderboard }
   | screen gameState == Start = return gameState { walls = nextWalls (walls gameState) }
   where
-    nextWalls [] = levelWalls (level gameState) -- Set walls according to the level
+    nextWalls [] = levelWalls (level gameState)
     nextWalls _  = []
 handleKeys (EventKey (Char '0') Down _ _) gameState = return gameState { level = 0, walls = levelWalls 0 }
 handleKeys (EventKey (Char '1') Down _ _) gameState = return gameState { level = 1, walls = levelWalls 1 }
@@ -258,11 +258,6 @@ handleKeys (EventKey (Char 't') Down _ _) gameState
   | screen gameState == Start = return gameState { tailMode = not (tailMode gameState) }
 handleKeys _ gameState = return gameState
 
-oppositeDirection :: Direction -> Direction
-oppositeDirection U = D
-oppositeDirection D = U
-oppositeDirection L = R
-oppositeDirection R = L
 
 -- Main function
 main :: IO ()
