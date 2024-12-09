@@ -132,7 +132,7 @@ levelWalls 3 = [(x,y) | x <- [-5], y <- [-5..5], y /= 0] ++
 levelWalls 4 = [(x,y) | x <- [5], y <- [-5..5]] ++
                [(x,y) | x <- [3..7], y <-[5,-5], x /= 5] ++
                [(x,y) | x <- [-5], y <- [-5..5]] ++
-               [(x,y) | x <- [-3..-7], y <-[5,-5], x /= -5] 
+               [(x,y) | x <- [-3.. -7], y <-[5,-5], x /= -5] 
 levelWalls 5 = [(0,1),(10,1)]
 -- Update logic
 update :: Float -> GameState -> IO GameState
