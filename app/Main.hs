@@ -45,7 +45,7 @@ renderStartScreen gameState = pictures
   [ translate (-130) 100 (scale 0.2 0.2 (color white (text "Press ENTER to Start")))
   , translate (-170) 50 (scale 0.2 0.2 (color white (text "Use ARROW KEYS to move")))
   , translate (-175) (-50) (scale 0.2 0.2 (color white (text "Press T to toggle Tail Mode")))
-  , translate (-180) (-100) (scale 0.2 0.2 (color white (text "Press 1,2,3,4,5 to select level")))
+  , translate (-190) (-100) (scale 0.2 0.2 (color white (text "Press 0,1,2,3,4,5 to select level")))
   , translate (-180) (-150) (scale 0.2 0.2 (color white (text ("Level: " ++ show (level gameState) ++ " Tail Mode: " ++ show(tailMode gameState)))))
   ]
 
@@ -248,6 +248,7 @@ handleKeys (EventKey (Char 'l') Down _ _) gameState
   where
     nextWalls [] = levelWalls (level gameState) -- Set walls according to the level
     nextWalls _  = []
+handleKeys (EventKey (Char '0') Down _ _) gameState = return gameState { level = 0, walls = levelWalls 0 }
 handleKeys (EventKey (Char '1') Down _ _) gameState = return gameState { level = 1, walls = levelWalls 1 }
 handleKeys (EventKey (Char '2') Down _ _) gameState = return gameState { level = 2, walls = levelWalls 2 }
 handleKeys (EventKey (Char '3') Down _ _) gameState = return gameState { level = 3, walls = levelWalls 3 }
