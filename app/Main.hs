@@ -178,7 +178,7 @@ updateGame gameState
             { snake = newSnake
             , food = newFood
             , score = if newHead == food gameState then score gameState + 1 else score gameState
-            , hiScore = max (score gameState + 1) (hiScore gameState)
+            , hiScore = max (score gameState) (hiScore gameState)
             , dir = newDir
             }
 
@@ -232,6 +232,7 @@ handleKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState =
 handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
   | screen gameState == Start = return gameState { screen = Game }
   | screen gameState == GameOver = initialState
+  | screen gameState == Leaderboard = GameOver
 handleKeys (EventKey (Char 'l') Down _ _) gameState
   | screen gameState == GameOver = return gameState { screen = Leaderboard }
   | screen gameState == Start = return gameState { walls = nextWalls (walls gameState) }
