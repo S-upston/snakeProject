@@ -239,7 +239,7 @@ handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
               , food = foodPos
               , alive = True
               , score = 0
-              , hiScore = 0
+              , hiScore = hiScore gameState
               , screen = Start
               , walls = []
               , tailMode = False
