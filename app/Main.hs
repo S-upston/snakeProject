@@ -12,7 +12,6 @@ blockSize = 20
 -- Types
 data Direction = U | D | L | R deriving (Eq)
 type Position = (Int, Int)
-
 data GameState = GameState
   { snake      :: [Position]
   , dir        :: Direction
@@ -24,16 +23,15 @@ data GameState = GameState
   , walls      :: [Position]
   , tailMode   :: Bool
   , leaderboard :: [Int]
-  , level      :: Int  -- New field for level
+  , level      :: Int 
   }
-
 data Screen = Start | Game | GameOver | Leaderboard deriving (Eq)
 
--- Convert game coordinates to Gloss coordinates
+-- Converts game posistions to Gloss coordinates
 toGlossCoord :: Position -> (Float, Float)
 toGlossCoord (x, y) = (fromIntegral x * fromIntegral blockSize, fromIntegral y * fromIntegral blockSize)
 
--- Rendering functions
+--Handles which screen should be rendered
 render :: GameState -> Picture
 render gameState = case screen gameState of
   Start        -> renderStartScreen
@@ -41,6 +39,7 @@ render gameState = case screen gameState of
   GameOver     -> renderGameOverScreen gameState
   Leaderboard  -> renderLeaderboardScreen (leaderboard gameState)
 
+--Renders the start scren
 renderStartScreen :: Picture
 renderStartScreen = pictures
   [ translate (-130) 100 (scale 0.2 0.2 (color white (text "Press ENTER to Start")))
@@ -49,6 +48,7 @@ renderStartScreen = pictures
   , translate (-180) (-100) (scale 0.2 0.2 (color white (text "Press 1,2,3,4,5 to select level")))
   ]
 
+--Renders the game screen
 renderGameScreen :: GameState -> Picture
 renderGameScreen (GameState snake _ food _ score hiScore _ walls _ _ _) = pictures (
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
@@ -61,9 +61,7 @@ renderGameScreen (GameState snake _ food _ score hiScore _ walls _ _ _) = pictur
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
     size = fromIntegral blockSize
 
-
-
-
+--Renders the game over screen
 renderGameOverScreen :: GameState -> Picture
 renderGameOverScreen gameState = pictures
   [ translate (-110) 50 (scale 0.3 0.3 (color white (text "Game Over")))
@@ -71,17 +69,18 @@ renderGameOverScreen gameState = pictures
   , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart")))
   , translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press L for Leaderboard")))
   ]
-
+--Renders the leaderboard screen
 renderLeaderboardScreen :: [Int] -> Picture
 renderLeaderboardScreen scores = pictures (
   [ translate (-130) 100 (scale 0.3 0.3 (color white (text "Leaderboard"))) ] ++
    zipWith (\y (place, score) -> translate (-100) y (scale 0.2 0.2 (color white (text $ show place ++ ".       " ++ show score)))) [50, 20..] (zip [1..] (reverse(take 10 scores))))
--- Initialization
+
+--Initial state for the game
 initialState :: IO GameState
 initialState = do
   foodPos <- randomPosition
   return GameState
-    { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
+    { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)] 
     , dir = R
     , food = foodPos
     , alive = True
@@ -91,9 +90,9 @@ initialState = do
     , walls = []
     , tailMode = False
     , leaderboard = []
-    , level = 1  -- Default level
+    , level = 0  -- Default level
     }
-    
+--Generates a random food position until the position isn't in the wall    
 randomFoodPosition :: GameState -> IO Position
 randomFoodPosition gameState = do
   newFoodPos <- randomPosition
@@ -101,7 +100,7 @@ randomFoodPosition gameState = do
     then randomFoodPosition gameState
     else return newFoodPos
 
--- Function to generate a random position
+--Generates a random position
 randomPosition :: IO Position
 randomPosition = do
   x <- randomRIO (-w, w)
@@ -112,7 +111,7 @@ randomPosition = do
     h = windowHeight `div` (2 * blockSize) - 1
 
 
-    
+--Defines the wall locations for each level    
 levelWalls :: Int -> [Position]
 levelWalls 1 = [(-5,-5),(-4,-5),(-5,-4),(5,5),(4,5),(5,4),(-5,5),(-4,5),(-5,4),(5,-5),(4,-5),(5,-4)] -- Simple walls, cross shape
 levelWalls 2 = [(x,y) | x <- [-5,5], y <- [0..5]] ++
@@ -137,18 +136,19 @@ levelWalls 5 = [(x,y) | x <- [-5], y <- [-5..5], y /= 0] ++
                [(2,2),(2,1),(1,2),(-2,2),(-2,1),(-1,2),(2,-2),(2,-1),(1,-2),(-2,-2),(-2,-1),(-1,-2)]
 
 
--- Update logic
+--Updates the game when needed
 update :: Float -> GameState -> IO GameState
 update _ gameState = case screen gameState of
   Start        -> return gameState
   Game         -> updateGame gameState
   GameOver     -> return gameState
   Leaderboard  -> return gameState
-
+--Updates the game
 updateGame :: GameState -> IO GameState
 updateGame gameState
   | not (alive gameState) = return gameState { screen = GameOver }
   | otherwise = do
+      --Makes a new head and handles the necessary logic if tail mode is enabled 
       let tailHead = move (dir gameState) (head (snake gameState))
           newDir
             | tailMode gameState && tailHead == food gameState = tailDirection (snake gameState)
@@ -158,13 +158,12 @@ updateGame gameState
             | otherwise = move (dir gameState) (head (snake gameState))
           newSnake
             | tailMode gameState && tailHead == food gameState = 
-                -- Tail Mode logic: reverse direction and mirror
                 newHead : reverse(tailHead:(init(snake gameState)))
-            | newHead == food gameState = -- Regular snake eating food
+            | newHead == food gameState = 
                 newHead : snake gameState
-            | otherwise = -- Regular snake movement
+            | otherwise = 
                 newHead : init (snake gameState)
-      -- Check for collision after adding the new head
+      -- Checks for collision after adding the new head
       if collision newHead (newSnake ++ walls gameState)
         then return gameState { alive = False, screen = GameOver, leaderboard = updateLeaderboard (score gameState) (leaderboard gameState) }
         else do
@@ -176,7 +175,7 @@ updateGame gameState
             , hiScore = max (score gameState) (hiScore gameState)
             , dir = newDir
             }
-
+--Handles getting the new direction after food is eaten in tail mode
 tailDirection :: [Position] -> Direction
 tailDirection snake 
   | (0,1) == newDir = D
@@ -185,27 +184,24 @@ tailDirection snake
   | (-1,0) == newDir = R
   where
     newDir = getTailComponent (drop ((length snake) - 2) snake)
-                
-
+ --Helper function for tailDirection       
 getTailComponent :: [Position] -> Position
 getTailComponent [(x1,y1),(x2,y2)] = (x1-x2,y1-y2)
 
-
-
+--Updates leaderboard with new score
 updateLeaderboard :: Int -> [Int] -> [Int]
 updateLeaderboard score lb = take 10 (insert score lb)
 
+--Returns the corresponding postion translation for each direction
 move :: Direction -> Position -> Position
 move U (x, y) = (x, y + 1)
 move D (x, y) = (x, y - 1)
 move L (x, y) = (x - 1, y)
 move R (x, y) = (x + 1, y)
 
+--Checks for collision 
 collision :: Position -> [Position] -> Bool
-collision pos body
-  | null body = False  -- If body is empty, no collision
-  | length body == 1 = pos == head body  -- If only one segment, check against the head only
-  | otherwise = pos `elem` tail body || outOfBounds pos
+collision pos body = pos `elem` tail body || outOfBounds pos
   where
     outOfBounds (x, y) = abs x > w || abs y > h
     w = windowWidth `div` (2 * blockSize)
@@ -214,7 +210,7 @@ collision pos body
 
     
 
--- Event Handling
+--Handles keyboard input
 handleKeys :: Event -> GameState -> IO GameState
 handleKeys (EventKey (SpecialKey KeyUp) Down _ _) gameState =
   return $ if dir gameState /= D then gameState { dir = U } else gameState
@@ -229,7 +225,7 @@ handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
   | screen gameState == GameOver = do
             foodPos <- randomPosition
             return GameState
-              { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
+              { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  
               , dir = R
               , food = foodPos
               , alive = True
@@ -239,7 +235,7 @@ handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
               , walls = []
               , tailMode = False
               , leaderboard = leaderboard gameState
-              , level = 1  -- Default level
+              , level = 0  
               }
   | screen gameState == Leaderboard = return gameState { screen = GameOver } 
 handleKeys (EventKey (Char 'l') Down _ _) gameState
