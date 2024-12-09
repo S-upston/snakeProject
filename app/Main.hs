@@ -70,14 +70,15 @@ renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSn
 renderGameOverScreen :: GameState -> Picture
 renderGameOverScreen gameState = pictures
   [ translate (-110) 50 (scale 0.3 0.3 (color white (text "Game Over")))
-  , translate (-150) (-50) (scale 0.2 0.2 (color white (text $ "Final Score: " ++ show (score gameState))))
+  , translate (-150) (-50) (scale 0.2 0.2 (color white (text $ "Score: " ++ show (score gameState) ++ "   Hi-Score:" ++ show(hiScore gameState))))
   , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart or L for Leaderboard")))
+  , translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press L for Leaderboard")))
   ]
 
 renderLeaderboardScreen :: [Int] -> Picture
 renderLeaderboardScreen scores = pictures (
   [ translate (-130) 100 (scale 0.3 0.3 (color white (text "Leaderboard"))) ] ++
-   zipWith (\y (place, score) -> translate (-100) y (scale 0.2 0.2 (color white (text $ show place ++ ".          " ++ show score)))) [50, 20..] (zip [1..] (reverse(take 10 scores))))
+   zipWith (\y (place, score) -> translate (-100) y (scale 0.2 0.2 (color white (text $ show place ++ ".       " ++ show score)))) [50, 20..] (zip [1..] (reverse(take 10 scores))))
 -- Initialization
 initialState :: IO GameState
 initialState = do
