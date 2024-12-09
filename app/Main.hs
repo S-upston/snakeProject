@@ -26,10 +26,6 @@ data GameState = GameState
   }
 data Screen = Start | Game | GameOver | Leaderboard deriving (Eq)
 
--- Converts game posistions to Gloss coordinates
-toGlossCoord :: Position -> (Float, Float)
-toGlossCoord (x, y) = (fromIntegral x * fromIntegral blockSize, fromIntegral y * fromIntegral blockSize)
-
 --Handles which screen should be rendered
 render :: GameState -> Picture
 render gameState = case screen gameState of
