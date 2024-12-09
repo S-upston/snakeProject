@@ -1,8 +1,10 @@
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random (randomRIO)
-import Data.List (insert)
+import Data.List (insert, sort)
 import Debug.Trace (trace)
+import System.IO (readFile, writeFile)
+
 -- Constants
 windowWidth, windowHeight, blockSize :: Int
 windowWidth = 420
@@ -12,7 +14,6 @@ blockSize = 20
 -- Types
 data Direction = U | D | L | R deriving (Eq)
 type Position = (Int, Int)
-
 data GameState = GameState
   { snake      :: [Position]
   , dir        :: Direction
@@ -74,14 +75,25 @@ renderGameOverScreen gameState = pictures
   , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart or L for Leaderboard")))
   ]
 
-renderLeaderboardScreen :: [Int] -> Picture
-renderLeaderboardScreen scores = pictures $
+renderLeaderboardScreen :: GameState -> Picture
+renderLeaderboardScreen gameState = pictures $
   [ translate (-130) 100 (scale 0.3 0.3 (color white (text "Leaderboard"))) ] ++
-  zipWith (\y score -> translate (-100) y (scale 0.2 0.2 (color white (text $ show score)))) [50, 30..] (take 10 scores)
+  zipWith (\y score -> translate (-100) y (scale 0.2 0.2 (color white (text $ show score)))) [50, 30..] (leaderboard gameState)
+
+
+loadLeaderboard :: IO [Int]
+loadLeaderboard = do
+  contents <- readFile "leaderboard.txt"
+  let scores = map read (lines contents) :: [Int]
+  return scores
+
+saveLeaderboard :: [Int] -> IO ()
+saveLeaderboard scores = writeFile "leaderboard.txt" (unlines (map show scores))
 
 -- Initialization
 initialState :: IO GameState
 initialState = do
+  leaderboard <- loadLeaderboard `catch` (\_ -> return [])
   foodPos <- randomPosition
   return GameState
     { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
@@ -95,7 +107,7 @@ initialState = do
     , tailMode = False
     , duoMode = False
     , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
-    , leaderboard = []
+    , leaderboard = leaderboard
     , level = 1  -- Default level
     }
     
@@ -197,8 +209,12 @@ getTailComponent [(x1,y1),(x2,y2)] = (x1-x2,y1-y2)
 
 
 
-updateLeaderboard :: Int -> [Int] -> [Int]
-updateLeaderboard score lb = take 10 (insert score lb)
+updateLeaderboard :: Int -> GameState -> IO GameState
+updateLeaderboard score gameState = do
+  let newLeaderboard = take 10 (insert score (leaderboard gameState))
+  saveLeaderboard newLeaderboard  -- Save the updated leaderboard to the file
+  return gameState { leaderboard = newLeaderboard, hiScore = maximum newLeaderboard }
+
 
 move :: Direction -> Position -> Position
 move U (x, y) = (x, y + 1)
