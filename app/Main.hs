@@ -69,6 +69,7 @@ renderGameOverScreen gameState = pictures
   , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart")))
   , translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press L for Leaderboard")))
   ]
+  
 --Renders the leaderboard screen
 renderLeaderboardScreen :: [Int] -> Picture
 renderLeaderboardScreen scores = pictures (
@@ -90,7 +91,7 @@ initialState = do
     , walls = []
     , tailMode = False
     , leaderboard = []
-    , level = 0  -- Default level
+    , level = 0  
     }
 --Generates a random food position until the position isn't in the wall    
 randomFoodPosition :: GameState -> IO Position
@@ -176,6 +177,7 @@ updateGame gameState
             , hiScore = max (score gameState) (hiScore gameState)
             , dir = newDir
             }
+            
 --Handles getting the new direction after food is eaten in tail mode
 tailDirection :: [Position] -> Direction
 tailDirection snake 
