@@ -245,6 +245,7 @@ handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
               , tailMode = False
               , duoMode = False
               , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
+              , leaderboard = leaderboard gameState
               , level = 1  -- Default level
               }
   | screen gameState == Leaderboard = return gameState { screen = GameOver } 
