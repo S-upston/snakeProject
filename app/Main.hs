@@ -46,7 +46,7 @@ renderStartScreen gameState = pictures
   , translate (-170) 50 (scale 0.2 0.2 (color white (text "Use ARROW KEYS to move")))
   , translate (-175) (-50) (scale 0.2 0.2 (color white (text "Press T to toggle Tail Mode")))
   , translate (-195) (-100) (scale 0.2 0.2 (color white (text "Press 0,1,2,3,4,5 to select level")))
-  , translate (-180) (-150) (scale 0.2 0.2 (color white (text ("Level: " ++ show (level gameState) ++ " Tail Mode: " ++ show(tailMode gameState)))))
+  , translate (-170) (-150) (scale 0.2 0.2 (color white (text ("Level: " ++ show (level gameState) ++ " Tail Mode: " ++ show(tailMode gameState)))))
   ]
 
 --Renders the game screen
