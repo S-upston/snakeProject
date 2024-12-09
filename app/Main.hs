@@ -53,13 +53,13 @@ renderStartScreen = pictures
   ]
 
 renderGameScreen :: GameState -> Picture
-renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSnake _ _) = pictures $
+renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSnake _ _) = pictures (
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
   (if duoMode then [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] else []) ++
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
   [ translateBlock food (color red (rectangleSolid size size)) ] ++
   [ translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
-      (scale 0.1 0.1 (color white (text $ "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore))) ]
+      (scale 0.1 0.1 (color white (text $ "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore))) ])
   where
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
     size = fromIntegral blockSize
@@ -70,8 +70,8 @@ renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSn
 renderGameOverScreen :: GameState -> Picture
 renderGameOverScreen gameState = pictures
   [ translate (-110) 50 (scale 0.3 0.3 (color white (text "Game Over")))
-  , translate (-150) (-50) (scale 0.2 0.2 (color white (text $ "Score: " ++ show (score gameState) ++ "   Hi-Score:" ++ show(hiScore gameState))))
-  , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart or L for Leaderboard")))
+  , translate (-150) (-50) (scale 0.2 0.2 (color white (text $ "Score: " ++ show (score gameState) ++ "   Hi-Score: " ++ show(hiScore gameState))))
+  , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart")))
   , translate (-150) (-150) (scale 0.2 0.2 (color white (text "Press L for Leaderboard")))
   ]
 
