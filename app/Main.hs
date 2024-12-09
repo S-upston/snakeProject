@@ -77,8 +77,7 @@ renderGameOverScreen gameState = pictures
 renderLeaderboardScreen :: [Int] -> Picture
 renderLeaderboardScreen scores = pictures $
   [ translate (-130) 100 (scale 0.3 0.3 (color white (text "Leaderboard"))) ] ++
-  zipWith (\y score -> translate (100) y (scale 0.2 0.2 (color white (text $ show score)))) [50, 20..] (reverse (take 10 scores))
-
+   zipWith (\y (place, score) -> translate (-100) y (scale 0.2 0.2 (color white (text $ show place ++ ". " ++ show score)))) [50, 30..] (zip [1..] (reverse(take 10 scores)))
 -- Initialization
 initialState :: IO GameState
 initialState = do
