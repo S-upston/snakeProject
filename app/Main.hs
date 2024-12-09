@@ -1,11 +1,8 @@
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random (randomRIO)
-import Data.List (insert, sort)
+import Data.List (insert)
 import Debug.Trace (trace)
-import System.IO (readFile, writeFile)
-import Control.Exception (catch, SomeException)
-
 -- Constants
 windowWidth, windowHeight, blockSize :: Int
 windowWidth = 420
@@ -15,6 +12,7 @@ blockSize = 20
 -- Types
 data Direction = U | D | L | R deriving (Eq)
 type Position = (Int, Int)
+
 data GameState = GameState
   { snake      :: [Position]
   , dir        :: Direction
@@ -76,25 +74,14 @@ renderGameOverScreen gameState = pictures
   , translate (-150) (-100) (scale 0.2 0.2 (color white (text "Press ENTER to Restart or L for Leaderboard")))
   ]
 
-renderLeaderboardScreen :: GameState -> Picture
-renderLeaderboardScreen gameState = pictures $
+renderLeaderboardScreen :: [Int] -> Picture
+renderLeaderboardScreen scores = pictures $
   [ translate (-130) 100 (scale 0.3 0.3 (color white (text "Leaderboard"))) ] ++
-  zipWith (\y score -> translate (-100) y (scale 0.2 0.2 (color white (text $ show score)))) [50, 30..] (leaderboard gameState)
-
-
-loadLeaderboard :: IO [Int]
-loadLeaderboard = do
-  contents <- readFile "leaderboard.txt"
-  let scores = map read (lines contents) :: [Int]
-  return scores
-
-saveLeaderboard :: [Int] -> IO ()
-saveLeaderboard scores = writeFile "leaderboard.txt" (unlines (map show scores))
+  zipWith (\y score -> translate (-100) y (scale 0.2 0.2 (color white (text $ show score)))) [50, 30..] (take 10 scores)
 
 -- Initialization
 initialState :: IO GameState
 initialState = do
-  leaderboard <- loadLeaderboard `catch` (\_ -> return [])
   foodPos <- randomPosition
   return GameState
     { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
@@ -108,7 +95,7 @@ initialState = do
     , tailMode = False
     , duoMode = False
     , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
-    , leaderboard = leaderboard
+    , leaderboard = []
     , level = 1  -- Default level
     }
     
@@ -210,12 +197,8 @@ getTailComponent [(x1,y1),(x2,y2)] = (x1-x2,y1-y2)
 
 
 
-updateLeaderboard :: Int -> GameState -> IO GameState
-updateLeaderboard score gameState = do
-  let newLeaderboard = take 10 (insert score (leaderboard gameState))
-  saveLeaderboard newLeaderboard  -- Save the updated leaderboard to the file
-  return gameState { leaderboard = newLeaderboard, hiScore = maximum newLeaderboard }
-
+updateLeaderboard :: Int -> [Int] -> [Int]
+updateLeaderboard score lb = take 10 (insert score lb)
 
 move :: Direction -> Position -> Position
 move U (x, y) = (x, y + 1)
@@ -246,17 +229,16 @@ handleKeys (EventKey (SpecialKey KeyLeft) Down _ _) gameState =
   return $ if dir gameState /= R then gameState { dir = L } else gameState
 handleKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState =
   return $ if dir gameState /= L then gameState { dir = R } else gameState
-handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState = case screen gameState of
-  Start    -> return gameState { screen = Game }
-  GameOver -> do
-    gameState' <- updateLeaderboard (score gameState) gameState  -- Update leaderboard
-    initialState
-  Leaderboard -> return gameState { screen = GameOver }  -- Go back to GameOver screen
-  _        -> return gameState
-handleKeys (EventKey (Char 'l') Down _ _) gameState = case screen gameState of
-  GameOver -> return gameState { screen = Leaderboard }  -- Go to Leaderboard screen
-  _        -> return gameState
-handleKeys _ gameState = return gameState
+handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
+  | screen gameState == Start = return gameState { screen = Game }
+  | screen gameState == GameOver = initialState
+  | screen gameState == Leaderboard = return gameState { screen = GameOver } 
+handleKeys (EventKey (Char 'l') Down _ _) gameState
+  | screen gameState == GameOver = return gameState { screen = Leaderboard }
+  | screen gameState == Start = return gameState { walls = nextWalls (walls gameState) }
+  where
+    nextWalls [] = levelWalls (level gameState) -- Set walls according to the level
+    nextWalls _  = []
 handleKeys (EventKey (Char '1') Down _ _) gameState = return gameState { level = 1, walls = levelWalls 1 }
 handleKeys (EventKey (Char '2') Down _ _) gameState = return gameState { level = 2, walls = levelWalls 2 }
 handleKeys (EventKey (Char '3') Down _ _) gameState = return gameState { level = 3, walls = levelWalls 3 }
