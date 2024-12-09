@@ -157,7 +157,7 @@ updateGame gameState
       if collision newHead newSnake
         then return gameState { alive = False, screen = GameOver }
         else do
-          newFood <- if tailHead == food gameState then randomFoodPosition else return (food gameState)
+          newFood <- if tailHead == food gameState then randomFoodPosition gameState else return (food gameState)
           return gameState
             { snake = newSnake
             , food = newFood
