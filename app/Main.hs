@@ -201,7 +201,10 @@ move R (x, y) = (x + 1, y)
 
 --Checks for collision 
 collision :: Position -> [Position] -> Bool
-collision pos body = pos `elem` tail body || outOfBounds pos
+collision pos body
+  | null body = False  -- If body is empty, no collision
+  | length body == 1 = pos == head body  -- If only one segment, check against the head only
+  | otherwise = pos `elem` tail body || outOfBounds pos
   where
     outOfBounds (x, y) = abs x > w || abs y > h
     w = windowWidth `div` (2 * blockSize)
