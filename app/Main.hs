@@ -34,18 +34,19 @@ toGlossCoord (x, y) = (fromIntegral x * fromIntegral blockSize, fromIntegral y *
 --Handles which screen should be rendered
 render :: GameState -> Picture
 render gameState = case screen gameState of
-  Start        -> renderStartScreen
+  Start        -> renderStartScreen gameState
   Game         -> renderGameScreen gameState
   GameOver     -> renderGameOverScreen gameState
   Leaderboard  -> renderLeaderboardScreen (leaderboard gameState)
 
 --Renders the start scren
-renderStartScreen :: Picture
+renderStartScreen :: GameState -> Picture
 renderStartScreen = pictures
   [ translate (-130) 100 (scale 0.2 0.2 (color white (text "Press ENTER to Start")))
   , translate (-170) 50 (scale 0.2 0.2 (color white (text "Use ARROW KEYS to move")))
   , translate (-175) (-50) (scale 0.2 0.2 (color white (text "Press T to toggle Tail Mode")))
   , translate (-180) (-100) (scale 0.2 0.2 (color white (text "Press 1,2,3,4,5 to select level")))
+  , translate (-200) (-150) (scale 0.2 0.2 (color white (text ("Level: " ++ show (level gameSate) ++ " Tail Mode: " ++ show (tailMode gameState)))))
   ]
 
 --Renders the game screen
@@ -55,7 +56,7 @@ renderGameScreen (GameState snake _ food _ score hiScore _ walls _ _ _) = pictur
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
   [ translateBlock food (color red (rectangleSolid size size)) ] ++
   [ translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
-      (scale 0.1 0.1 (color white (text $ "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore))) ] ++
+      (scale 0.1 0.1 (color white (text ( "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore)))) ] ++
   [color white (rectangleWire (fromIntegral windowWidth) (fromIntegral windowHeight))]  ) 
   where
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
