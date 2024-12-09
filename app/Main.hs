@@ -134,7 +134,8 @@ levelWalls 4 = [(x,y) | x <- [5], y <- [-5..5]] ++
                [(x,y) | x <- [-5], y <- [-5..5]] ++
                [(x,y) | x <- [-7.. -3], y <-[5,-5], x /= -5] 
 levelWalls 5 = [(x,y) | x <- [-5,5], y <- [0..5]] ++
-               [(x,y) | x <- [-3..3], y <- [-3]]
+               [(x,y) | x <- [-3..3], y <- [-6]] ++
+               [(-4,-5),(-5,-4),(4,-5),(5,-4)]
 -- Update logic
 update :: Float -> GameState -> IO GameState
 update _ gameState = case screen gameState of
