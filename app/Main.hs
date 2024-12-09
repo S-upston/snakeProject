@@ -4,6 +4,7 @@ import System.Random (randomRIO)
 import Data.List (insert, sort)
 import Debug.Trace (trace)
 import System.IO (readFile, writeFile)
+import Control.Exception (catch, SomeException)
 
 -- Constants
 windowWidth, windowHeight, blockSize :: Int
