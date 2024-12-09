@@ -23,8 +23,6 @@ data GameState = GameState
   , screen     :: Screen
   , walls      :: [Position]
   , tailMode   :: Bool
-  , duoMode    :: Bool
-  , duoSnake   :: [Position]
   , leaderboard :: [Int]
   , level      :: Int  -- New field for level
   }
@@ -52,9 +50,8 @@ renderStartScreen = pictures
   ]
 
 renderGameScreen :: GameState -> Picture
-renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSnake _ _) = pictures (
+renderGameScreen (GameState snake _ food _ score hiScore _ walls _ _ _) = pictures (
   [ translateBlock pos (color green (rectangleSolid size size)) | pos <- snake ] ++
-  (if duoMode then [ translateBlock pos (color blue (rectangleSolid size size)) | pos <- duoSnake ] else []) ++
   [ translateBlock pos (color white (rectangleSolid size size)) | pos <- walls ] ++
   [ translateBlock food (color red (rectangleSolid size size)) ] ++
   [ translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
@@ -93,8 +90,6 @@ initialState = do
     , screen = Start
     , walls = []
     , tailMode = False
-    , duoMode = False
-    , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
     , leaderboard = []
     , level = 1  -- Default level
     }
@@ -243,8 +238,6 @@ handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
               , screen = Start
               , walls = []
               , tailMode = False
-              , duoMode = False
-              , duoSnake = [(5, -5), (4, -5), (3, -5), (2, -5)]
               , leaderboard = leaderboard gameState
               , level = 1  -- Default level
               }
@@ -262,8 +255,6 @@ handleKeys (EventKey (Char '4') Down _ _) gameState = return gameState { level =
 handleKeys (EventKey (Char '5') Down _ _) gameState = return gameState { level = 5, walls = levelWalls 5 }
 handleKeys (EventKey (Char 't') Down _ _) gameState
   | screen gameState == Start = return gameState { tailMode = not (tailMode gameState) }
-handleKeys (EventKey (Char 'd') Down _ _) gameState
-  | screen gameState == Start = return gameState { duoMode = not (duoMode gameState) }
 handleKeys _ gameState = return gameState
 
 oppositeDirection :: Direction -> Direction
