@@ -129,7 +129,8 @@ levelWalls 3 = [(x,y) | x <- [-5], y <- [-5..5], y /= 0] ++
                [(x,y) | y <- [-5], x <- [-4..4], x /= 0] ++
                [(x,y) | y <- [5], x <- [-4..4], x /= 0] ++
                [(2,2),(2,1),(1,2),(-2,2),(-2,1),(-1,2),(2,-2),(2,-1),(1,-2),(-2,-2),(-2,-1),(-1,-2)]
-
+levelWalls 4 = [(0,1),(10,1)]
+levelWalls 5 = [(0,1),(10,1)]
 -- Update logic
 update :: Float -> GameState -> IO GameState
 update _ gameState = case screen gameState of
@@ -229,6 +230,8 @@ handleKeys (EventKey (Char 'l') Down _ _) gameState
 handleKeys (EventKey (Char '1') Down _ _) gameState = return gameState { level = 1, walls = levelWalls 1 }
 handleKeys (EventKey (Char '2') Down _ _) gameState = return gameState { level = 2, walls = levelWalls 2 }
 handleKeys (EventKey (Char '3') Down _ _) gameState = return gameState { level = 3, walls = levelWalls 3 }
+handleKeys (EventKey (Char '4') Down _ _) gameState = return gameState { level = 4, walls = levelWalls 4 }
+handleKeys (EventKey (Char '5') Down _ _) gameState = return gameState { level = 5, walls = levelWalls 5 }
 handleKeys (EventKey (Char 't') Down _ _) gameState
   | screen gameState == Start = return gameState { tailMode = not (tailMode gameState) }
 handleKeys (EventKey (Char 'd') Down _ _) gameState
