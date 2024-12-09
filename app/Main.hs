@@ -99,14 +99,23 @@ initialState = do
     , level = 1  -- Default level
     }
     
-randomFoodPosition :: IO Position
-randomFoodPosition = do
+randomFoodPosition :: GameState -> IO Position
+randomFoodPosition gameState = do
+  newFoodPos <- randomPosition
+  if newFoodPos `elem` (levelWalls (level gameState))  -- Check if food position is a wall
+    then randomFoodPosition gameState  -- If it is a wall, try again
+    else return newFoodPos  -- If not, return the new food position
+
+-- Function to generate a random position
+randomPosition :: IO Position
+randomPosition = do
   x <- randomRIO (-w, w)
   y <- randomRIO (-h, h)
   return (x, y)
   where
     w = windowWidth `div` (2 * blockSize) - 1
     h = windowHeight `div` (2 * blockSize) - 1
+
 
     
 levelWalls :: Int -> [Position]
