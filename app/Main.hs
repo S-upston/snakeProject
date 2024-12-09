@@ -232,7 +232,7 @@ handleKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState =
 handleKeys (EventKey (SpecialKey KeyEnter) Down _ _) gameState
   | screen gameState == Start = return gameState { screen = Game }
   | screen gameState == GameOver = initialState
-  | screen gameState == Leaderboard = GameOver
+  | screen gameState == Leaderboard = return gameState { screen = GameOver } 
 handleKeys (EventKey (Char 'l') Down _ _) gameState
   | screen gameState == GameOver = return gameState { screen = Leaderboard }
   | screen gameState == Start = return gameState { walls = nextWalls (walls gameState) }
