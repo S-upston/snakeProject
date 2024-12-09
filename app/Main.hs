@@ -100,11 +100,10 @@ initialState = do
     }
     
 randomFoodPosition :: GameState -> IO Position
-randomFoodPosition gameState = do
-  newFoodPos <- randomPosition
-  if newFoodPos `elem` (levelWalls (level gameState))  -- Check if food position is a wall
-    then randomFoodPosition gameState  -- If it is a wall, try again
-    else return newFoodPos  -- If not, return the new food position
+randomFoodPosition gameState 
+  | newFoodPos `elem` (levelWalls (level gameState)) = randomFoodPosition gameState
+  | otherwise = newFoodPos
+  where newFoodPos = randomPosition
 
 -- Function to generate a random position
 randomPosition :: IO Position
