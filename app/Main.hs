@@ -59,7 +59,7 @@ renderGameScreen (GameState snake _ food _ score hiScore _ walls _ duoMode duoSn
   [ translateBlock food (color red (rectangleSolid size size)) ] ++
   [ translate (-fromIntegral windowWidth / 2 + 10) (fromIntegral windowHeight / 2 - 30)
       (scale 0.1 0.1 (color white (text $ "Score: " ++ show score ++ " Hi-Score: " ++ show hiScore))) ] ++
-  [color white (rectangleWire (fromIntegral windowWidth) (fromIntegral windowHeight)]    
+  [color white (rectangleWire (fromIntegral windowWidth) (fromIntegral windowHeight))]    
   where
     translateBlock (x, y) block = translate (fromIntegral x * fromIntegral blockSize) (fromIntegral y * fromIntegral blockSize) block
     size = fromIntegral blockSize
