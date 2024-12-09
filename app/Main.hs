@@ -41,7 +41,7 @@ render gameState = case screen gameState of
 
 --Renders the start scren
 renderStartScreen :: GameState -> Picture
-renderStartScreen = pictures
+renderStartScreen gameState = pictures
   [ translate (-130) 100 (scale 0.2 0.2 (color white (text "Press ENTER to Start")))
   , translate (-170) 50 (scale 0.2 0.2 (color white (text "Use ARROW KEYS to move")))
   , translate (-175) (-50) (scale 0.2 0.2 (color white (text "Press T to toggle Tail Mode")))
