@@ -82,7 +82,7 @@ renderLeaderboardScreen scores = pictures $
 -- Initialization
 initialState :: IO GameState
 initialState = do
-  foodPos <- randomFoodPosition
+  foodPos <- randomPosition
   return GameState
     { snake = [(0, 0), (-1, 0), (-2, 0), (-3, 0)]  -- Adjusted initial position
     , dir = R
@@ -100,10 +100,11 @@ initialState = do
     }
     
 randomFoodPosition :: GameState -> IO Position
-randomFoodPosition gameState 
-  | newFoodPos `elem` (levelWalls (level gameState)) = randomFoodPosition gameState
-  | otherwise = newFoodPos
-  where newFoodPos = randomPosition
+randomFoodPosition gameState = do
+  newFoodPos <- randomPosition
+  if newFoodPos `elem` (levelWalls (level gameState))
+    then randomFoodPosition gameState
+    else return newFoodPos
 
 -- Function to generate a random position
 randomPosition :: IO Position
